@@ -71,13 +71,14 @@ export const searchUser = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
+    const userInfo = user;
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
     });
-    res.status(201).json({ message: "Inicio de sesión exitoso", token });
+    res.status(201).json({ message: "Inicio de sesión exitoso", userInfo });
   } catch (error) {
     res.status(500).json({
       message: "Error en el servidor",
