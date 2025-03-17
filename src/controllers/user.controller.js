@@ -81,7 +81,64 @@ export const searchUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error en el servidor",
-      error: error.message, // Envía el mensaje del error
+      error: error.message,
     });
+  }
+};
+
+export const recoverUser = async (req, res) => {
+  try {
+    const { email, second_email } = req.body;
+
+    if (!email || !second_email) {
+      return res
+        .status(400)
+        .json({ message: "Todos los campos son obligatorios" });
+    }
+
+    const user = await User.findOne({ email, second_email });
+
+    if (!user) {
+      return res.status(404).json({ message: "No se encontró el usuario" });
+    }
+
+    res.status(200).json({
+      message: "Usuario encontrado. Puedes cambiar tu contraseña ahora.",
+      value: user.id.toString(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error en el servidor",
+      error: error.message,
+    });
+  }
+};
+export const changePwdUser = async (req, res) => {
+  try {
+    const { id, password } = req.body;
+
+    if (!id || !password) {
+      return res
+        .status(400)
+        .json({ message: "Todos los campos son obligatorios" });
+    }
+
+    const user = await User.findOne({ _id: id });
+
+    if (!user) {
+      return res.status(404).json({ message: "No se encontró el usuario" });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return res
+      .status(201)
+      .json({ message: "Contraseña actualizada exitosamente." });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Error en el servidor", error: error.message });
   }
 };
