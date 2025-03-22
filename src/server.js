@@ -45,6 +45,10 @@ app.get("/user", async (req, res) => {
     const posts = await User.find({ user: user }); // filtro por el campo user si existe
     res.json(posts);
   });
+  app.get("/users", async (req, res) => {
+    const posts = await User.find(); // filtro por el campo user si existe
+    res.json(posts);
+  });
 
 app.get("/postsSaved", async (req, res) => {
   const user = req.query.user;
