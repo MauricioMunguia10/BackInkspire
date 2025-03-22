@@ -5,6 +5,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/user.routes.js";
 import multer from "multer";
+import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 
 dotenv.config();
@@ -28,6 +29,9 @@ app.use("/api/users", userRoutes);
 const PostSchema = new mongoose.Schema({ title: String, categoria: String , contenido: String, imgUrl:String, creator : String, usersave: [String] });
 const Post = mongoose.model("post", PostSchema);
 
+const UserSchema = new mongoose.Schema({name: String, user:String, email:String, password: String, second_email: String, type_user: String, active:Boolean, createdAt: Date });
+const User = mongoose.model("user", UserSchema);
+
 // Rutas API
 app.get("/", (req, res) => res.send("API funcionando"));
 app.get("/postsUser", async (req, res) => {
@@ -35,6 +39,12 @@ app.get("/postsUser", async (req, res) => {
   const posts = await Post.find({ creator: user }); // filtro por el campo user si existe
   res.json(posts);
 });
+
+app.get("/user", async (req, res) => {
+    const user = req.query.user;
+    const posts = await User.find({ user: user }); // filtro por el campo user si existe
+    res.json(posts);
+  });
 
 app.get("/postsSaved", async (req, res) => {
   const user = req.query.user;
